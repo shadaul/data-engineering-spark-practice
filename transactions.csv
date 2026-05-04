@@ -1,0 +1,6 @@
+transaction_id,user_id,amount,status
+1,101,150.0,SUCCESS
+2,102,500.0,FAILED
+3,101,200.0,SUCCESS
+4,103,1000.0,SUCCESS
+5,102,300.0,SUCCESS
