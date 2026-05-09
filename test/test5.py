@@ -1,7 +1,7 @@
 import os
 import sys
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, sum, avg, count, desc
+from pyspark.sql.functions import col, sum, avg, count, desc, when
 
 
 os.environ['PYSPARK_PYTHON'] = sys.executable
@@ -13,6 +13,13 @@ df = spark.read.csv("transactions.csv", header=True, inferSchema=True)
 
 filtr = df.filter(col("status") == "SUCCESS")
 
-result = filtr.groupBy("user_id").agg(sum("amount").alias("total_spent"), count("amount").alias("transaction_count")).orderBy(desc("total_spent"))
+df_categorized = filtr.withColumn(
+    "check_size",
+    when(col("amount") < 1000, "Small")
+    .when((col("amount") >= 1000) & (col("amount") <= 5000), "medium")
+    .otherwise("large")
+)
+
+result = df_categorized.groupBy("check_size").agg(count("amount"))
 
 result.show(10)
